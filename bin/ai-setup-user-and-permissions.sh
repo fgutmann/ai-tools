@@ -131,6 +131,14 @@ if [[ -n "$CALLING_USER" && "$CALLING_USER" != "root" ]]; then
     fi
 fi
 
+# Grant access to Docker socket directory if it exists
+DOCKER_RUN_DIR="/Users/$CALLING_USER/.docker/run"
+if [[ -n "$CALLING_USER" && "$CALLING_USER" != "root" && -d "$DOCKER_RUN_DIR" ]]; then
+    info "Granting ai-agent access to Docker socket directory: $DOCKER_RUN_DIR"
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    "$SCRIPT_DIR/ai-allow-dir.sh" "$DOCKER_RUN_DIR"
+fi
+
 echo ""
 info "Setup complete!"
 echo ""
@@ -139,4 +147,4 @@ echo "  1. Grant access to specific directories:"
 echo "     ./ai-allow-dir.sh /path/to/allowed/directory"
 echo ""
 echo "  2. Run pi as the restricted user:"
-echo "     ./ai-pi.sh /path/to/allowed/directory"
+echo "     ./ai-pi.sh"
