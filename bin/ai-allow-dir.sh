@@ -60,6 +60,19 @@ if ! dscl . -read /Groups/"$GROUP_NAME" &>/dev/null; then
     error "Group '$GROUP_NAME' does not exist. Run create-ai-agent-user.sh first."
 fi
 
+# Allowlist check - only allow paths under ~/workspace by default
+INVOKING_USER="${SUDO_USER:-$USER}"
+ALLOWED_PATTERN="^/Users/${INVOKING_USER}/workspace/"
+if [[ ! "$TARGET_DIR" =~ $ALLOWED_PATTERN ]]; then
+    warn "Directory is outside of ~/workspace: $TARGET_DIR"
+    warn "Granting broad access can be a security risk."
+    echo -n "Are you sure you want to continue? Type 'yes' to confirm: "
+    read -r CONFIRM
+    if [[ "$CONFIRM" != "yes" ]]; then
+        error "Aborted by user"
+    fi
+fi
+
 # Grant traverse (execute) permission on parent directories
 info "Granting traverse permission on parent directories..."
 CURRENT="$TARGET_DIR"
