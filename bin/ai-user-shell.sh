@@ -36,4 +36,4 @@ if ! sudo -n -u "$USER_NAME" true 2>/dev/null; then
     echo ""
 fi
 
-exec sudo -u "$USER_NAME" -i
+exec sudo su - "$USER_NAME"

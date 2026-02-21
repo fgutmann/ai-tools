@@ -66,4 +66,8 @@ if ! sudo -u "$USER_NAME" test -r "$WORK_DIR" 2>/dev/null; then
     error "Directory '$WORK_DIR' is not accessible to '$USER_NAME'. Run: ./ai-allow-dir.sh \"$WORK_DIR\""
 fi
 
-exec sudo -u "$USER_NAME" -i bash -c "cd '$WORK_DIR' && pi ${PI_ARGS[*]}"
+# start a new login shell ("-" arg), but use the PATH of the outer user
+exec sudo su - "$USER_NAME" -c "export PATH='$PATH'; cd '$WORK_DIR'; pi ${PI_ARGS[*]}"
+
+# insecure, as it allows to escape back to "fgutmann" using the `open` command
+# exec sudo -u "$USER_NAME" -i bash -c "cd '$WORK_DIR' && pi ${PI_ARGS[*]}"
