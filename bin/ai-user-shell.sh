@@ -19,6 +19,13 @@ error() {
     exit 1
 }
 
+passwordless_sudo_tip() {
+    local invoking_user="${SUDO_USER:-$USER}"
+    echo -e "${YELLOW}[TIP]${NC} To avoid password prompts, run: sudo visudo -f /etc/sudoers.d/ai-agent"
+    echo -e "      and add: ${invoking_user} ALL=(root) NOPASSWD: /usr/bin/su - ${USER_NAME}, /usr/bin/su - ${USER_NAME} -c *"
+    echo ""
+}
+
 # Check if running on macOS
 if [[ "$(uname)" != "Darwin" ]]; then
     error "This script only supports macOS"
@@ -30,10 +37,9 @@ if ! dscl . -read /Users/"$USER_NAME" &>/dev/null; then
 fi
 
 # Show tip about passwordless sudo (only if not already configured)
-if ! sudo -n -u "$USER_NAME" true 2>/dev/null; then
-    echo -e "${YELLOW}[TIP]${NC} To avoid password prompts, run: sudo visudo -f /etc/sudoers.d/ai-agent"
-    echo -e "      and add: ${SUDO_USER:-$USER} ALL=($USER_NAME) NOPASSWD: ALL"
-    echo ""
+if ! sudo -n su - "$USER_NAME" -c true 2>/dev/null; then
+    passwordless_sudo_tip
 fi
 
-exec sudo su - "$USER_NAME"
+# start a new login shell ("-" arg), but use the PATH of the outer user
+exec sudo su - "$USER_NAME" -c "export PATH='$PATH'; exec \$SHELL -l"

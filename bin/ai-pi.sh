@@ -32,6 +32,13 @@ warn() {
     echo -e "${YELLOW}[WARN]${NC} $1" >&2
 }
 
+passwordless_sudo_tip() {
+    local invoking_user="${SUDO_USER:-$USER}"
+    echo -e "${YELLOW}[TIP]${NC} To avoid password prompts, run: sudo visudo -f /etc/sudoers.d/ai-agent"
+    echo -e "      and add: ${invoking_user} ALL=(root) NOPASSWD: /usr/bin/su - ${USER_NAME}, /usr/bin/su - ${USER_NAME} -c *"
+    echo ""
+}
+
 # Check if running on macOS
 if [[ "$(uname)" != "Darwin" ]]; then
     error "This script only supports macOS"
@@ -55,14 +62,12 @@ PI_ARGS=("$@")
 
 # Run pi as ai-agent
 # Show tip about passwordless sudo (only if not already configured)
-if ! sudo -n -u "$USER_NAME" true 2>/dev/null; then
-    echo -e "${YELLOW}[TIP]${NC} To avoid password prompts, run: sudo visudo -f /etc/sudoers.d/ai-agent"
-    echo -e "      and add: ${SUDO_USER:-$USER} ALL=($USER_NAME) NOPASSWD: ALL"
-    echo ""
+if ! sudo -n su - "$USER_NAME" -c true 2>/dev/null; then
+    passwordless_sudo_tip
 fi
 
 # Check if ai-agent can access the directory
-if ! sudo -u "$USER_NAME" test -r "$WORK_DIR" 2>/dev/null; then
+if ! sudo su - "$USER_NAME" -c "test -r '$WORK_DIR'" 2>/dev/null; then
     error "Directory '$WORK_DIR' is not accessible to '$USER_NAME'. Run: ./ai-allow-dir.sh \"$WORK_DIR\""
 fi
 
