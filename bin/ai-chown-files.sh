@@ -7,6 +7,8 @@
 # Use SUDO_USER if running via sudo, otherwise fall back to USER
 TARGET_USER="${SUDO_USER:-$USER}"
 
-find . -user ai-agent -exec chown "$TARGET_USER" {} +
+DIR="${1-.}"
 
-echo "Done. Changed ownership of all ai-agent files to $TARGET_USER."
+find "$DIR" -user ai-agent -exec chown "$TARGET_USER" {} +
+
+echo "Done. Changed ownership of all ai-agent files in $DIR to $TARGET_USER."
