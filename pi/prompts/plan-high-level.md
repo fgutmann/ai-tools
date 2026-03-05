@@ -1,6 +1,15 @@
-Work with me on a high level plan for a change to the codebase. The plan should be high-level with no concrete code.
-It should however reference relevant code files for the task at hand,
-so that you can pick up easily from the high level plan to later create a low level plan.
-Write the plan to the file `plans/$1-high-level.md`.
+Let's create a high level plan in the plans folder.
+The plan should stay short and focus on the high level API changes, and business logic.
+Do not output detailed implementations (e.g. method bodies) into the plan.
 
-First ask me what the change is about.
+Some code-level concerns that the plan should discuss:
+
+1. How does the database model look like? This should be detailed SQL DDL statements.
+2. How does the domain model look like? 
+   This should be detailed and can have all the java record, sealed interface and enum definitions. 
+3. How does the API model look like? This should be detailed (e.g. using json (pseudo) examples with some comments).
+4. High level: Which components are created, what are their responsibilities, and where are they placed?
+5. High level: Which components need major modifications, what are their new responsibilities / changes? 
+
+All changes should follow existing patterns (where possible). Focus on correctness, clarity and simplicity.
+Make sure to ask clarifying questions instead of making assumptions.
