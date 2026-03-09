@@ -27,9 +27,7 @@ passwordless_sudo_tip() {
 
 # Self-elevate to root if needed
 if [ "$(/usr/bin/id -u)" -ne 0 ]; then
-    if ! sudo -n true 2>/dev/null; then
-        passwordless_sudo_tip
-    fi
+    passwordless_sudo_tip
     exec sudo "$SCRIPT_PATH" "$@"
 fi
 
